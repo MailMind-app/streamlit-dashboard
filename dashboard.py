@@ -144,10 +144,11 @@ with tab_stats:
         answered_count = df[df["Beantwoord"] == "Ja"].shape[0]
         answered_pct = (answered_count / total_mails * 100) if total_mails > 0 else 0
 
-        # ✅ Fix: tel alle categorieën die 'klacht' bevatten
+        # ✅ Klachten tellen (alle varianten met 'klacht')
         complaints_count = df[df["Categorie"].str.contains("klacht", case=False, na=False)].shape[0]
 
-        fallback_count = df["Reden"].notna().sum()
+        # ✅ Fallbacks tellen (alles met ingevulde reden)
+        fallback_count = df[df["Reden"].fillna("").str.strip() != ""].shape[0]
         fallback_pct = (fallback_count / total_mails * 100) if total_mails > 0 else 0
         ai_count = answered_count
 
