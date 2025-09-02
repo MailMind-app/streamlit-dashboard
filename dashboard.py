@@ -143,7 +143,10 @@ with tab_stats:
         unique_senders = df["Afzender"].nunique()
         answered_count = df[df["Beantwoord"] == "Ja"].shape[0]
         answered_pct = (answered_count / total_mails * 100) if total_mails > 0 else 0
-        complaints_count = df[df["Categorie"] == "Klacht"].shape[0]
+
+        # ✅ Fix: tel alle categorieën die 'klacht' bevatten
+        complaints_count = df[df["Categorie"].str.contains("klacht", case=False, na=False)].shape[0]
+
         fallback_count = df["Reden"].notna().sum()
         fallback_pct = (fallback_count / total_mails * 100) if total_mails > 0 else 0
         ai_count = answered_count
@@ -222,7 +225,7 @@ with tab_trends:
         st.markdown("### 📈 Dagelijks aantal e-mails")
         st.line_chart(df.groupby("Datum").size())
 
-        complaints_daily = df[df["Categorie"] == "Klacht"].groupby("Datum").size()
+        complaints_daily = df[df["Categorie"].str.contains("klacht", case=False, na=False)].groupby("Datum").size()
         if not complaints_daily.empty:
             st.markdown("### 🚨 Klachten per dag")
             st.line_chart(complaints_daily)
